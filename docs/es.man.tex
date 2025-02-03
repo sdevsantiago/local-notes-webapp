@@ -1,0 +1,138 @@
+\documentclass[a4paper,12pt]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{longtable}
+
+\title{Documentación del Proyecto: Local Notes Web App}
+\author{Sergio de Santiago Redondo}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\chapter{Introducción}
+
+El proyecto \textit{Local Notes Web App} es una aplicación de notas desarrollada en HTML, CSS y JavaScript, que permite al usuario crear notas y organizarlas en páginas. La aplicación es completamente funcional en el navegador, con el almacenamiento local como medio de persistencia, lo que significa que las notas se guardan en el navegador mismo. No requiere servidor backend, y la interfaz es sencilla y accesible.
+
+\chapter{Estructura del Proyecto}
+
+El proyecto tiene la siguiente estructura de carpetas:
+
+\begin{itemize}
+	\item \textbf{css/} : Contiene los estilos CSS para la aplicación.
+	\item \textbf{img/} : Contiene los recursos de imágenes, como el favicon.
+	\item \textbf{js/} : Contiene los archivos JavaScript que implementan la lógica de la aplicación.
+	\item \textbf{index.html} : El archivo HTML principal que carga la aplicación.
+\end{itemize}
+
+\chapter{Tecnologías Utilizadas}
+
+\begin{itemize}
+	\item \textbf{HTML}: Para la estructura de la página web.
+	\item \textbf{CSS}: Para los estilos visuales de la aplicación.
+	\item \textbf{JavaScript}: Para la lógica de la aplicación, utilizando clases ES6.
+	\item \textbf{LocalStorage}: Para guardar las notas y los contadores de notas en el navegador del usuario.
+	\item \textbf{Bootstrap}: Para el diseño responsivo y algunos componentes visuales.
+\end{itemize}
+
+\chapter{Descripción de los Archivos}
+
+\section{index.html}
+
+Este archivo contiene la estructura HTML básica de la aplicación. En él se incluye la barra de navegación, la sección para visualizar las notas y los botones para crear y eliminar notas. Además, se incluye el archivo de estilos y los scripts de JavaScript.
+
+\section{css/style.css}
+
+El archivo \texttt{style.css} define los estilos visuales de la aplicación. El cuerpo de la página tiene un fondo gris suave, y las notas tienen un estilo particular con un borde inferior. Los campos de entrada y los textos tienen estilos personalizados para facilitar la edición de las notas.
+
+\section{js/Note.js}
+
+Este archivo define la clase \texttt{Note}, que representa una nota. Cada nota tiene un título y un conjunto de páginas. La clase gestiona la creación de nuevas notas, su almacenamiento en el localStorage, y la manipulación del número total de notas y el ID de la próxima nota a crear.
+
+\begin{verbatim}
+class Note {
+	static #total_notes = 0;
+	static #next_id = 1;
+
+	static get getTotal_notes() { return Note.#total_notes; }
+	static set setTotal_notes(value) { Note.#total_notes = value; }
+	static get getNext_id() { return Note.#next_id; }
+	static set setNext_id(value) { Note.#next_id = value; }
+
+	constructor(title = "", updateCounter = true) {
+		this.note_title = title;
+		if (updateCounter) {
+			this.note_id = Note.#next_id++;
+			Note.#total_notes++;
+			Note.saveTotalNotes();
+		} else {
+			this.note_id = Note.#next_id;
+		}
+		this.pages = [];
+		this.currentPageIndex = 0;
+	}
+
+	// Métodos para gestionar el título, contenido y las páginas.
+}
+\end{verbatim}
+
+\section{js/Page.js}
+
+Este archivo define la clase \texttt{Page}, que extiende de \texttt{Note}. Cada \texttt{Page} tiene un subtítulo y contenido, y es capaz de añadir páginas a una nota, así como navegar entre ellas (hacia adelante y atrás).
+
+\begin{verbatim}
+class Page extends Note {
+	constructor(note_title = "", page_subtitle = "", content = "") {
+		super(note_title, false);
+		this.page_subtitle = page_subtitle;
+		this.content = content;
+	}
+
+	static addPage(note) {
+		note.pages.push(new Page());
+	}
+
+	static getCurrentPage(note) {
+		if (note.pages.length === 0) {
+			Page.addPage(note);
+		}
+		return note.pages[note.currentPageIndex];
+	}
+	// Métodos para navegación entre páginas.
+}
+\end{verbatim}
+
+\section{js/script.js}
+
+Este archivo contiene la lógica principal de la aplicación. Gestiona eventos como la creación de notas, la actualización de títulos y contenidos, la navegación entre páginas, y la eliminación de notas. También se encarga de guardar y cargar las notas desde el almacenamiento local (\texttt{localStorage}).
+
+\begin{verbatim}
+window.onload = function() {
+	Note.loadTotalNotes();
+	loadNotes();
+	update_total_notes();
+	render_notes();
+}
+\end{verbatim}
+
+\chapter{Funcionamiento de la Aplicación}
+
+Cuando el usuario entra a la aplicación por primera vez, se carga el total de notas guardadas desde el almacenamiento local, si es que existen. El usuario puede crear nuevas notas, las cuales se almacenan localmente, y se asignan un ID único.
+
+Cada nota puede tener varias páginas. El usuario puede agregar páginas a la nota, navegar entre ellas, actualizar el contenido, el subtítulo y el título. Además, se puede eliminar cualquier página o la nota completa.
+
+\chapter{Conclusión}
+
+El proyecto \textit{Local Notes Web App} es una sencilla aplicación para gestionar notas personales. A través del uso de clases en JavaScript y almacenamiento local, la aplicación permite crear, modificar y eliminar notas y páginas, todo sin necesidad de una base de datos externa.
+
+Este proyecto es útil como ejercicio para aprender cómo funcionan las clases en JavaScript, así como para familiarizarse con el uso de \texttt{localStorage} para persistir datos en el navegador.
+
+\end{document}
